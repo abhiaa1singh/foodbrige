@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - FoodBridge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60A5FA, #34D399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .food-card {
+            transition: all 0.3s ease;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(52, 211, 153, 0.3);
+        }
+
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white min-h-screen">
+
+    <nav class="bg-black/60 backdrop-blur-xl border-b border-white/10 py-4 px-6 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                    <i data-lucide="heart-handshake" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="text-xl font-semibold">FoodBridge</span>
+                <span
+                    class="ml-4 px-3 py-1 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">Student</span>
+            </div>
+            <a href="index.html" class="text-white/60 hover:text-white transition-colors flex items-center gap-2">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+                Logout
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-semibold mb-2">Welcome, <span class="gradient-text">Student</span>!</h1>
+            <p class="text-white/60">Browse available food near you.</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+            <div class="p-6 bg-white/[0.02] rounded-2xl border border-white/10">
+                <i data-lucide="package" class="w-8 h-8 text-green-400 mb-4"></i>
+                <h3 class="text-2xl font-semibold">0</h3>
+                <p class="text-white/50">Orders Completed</p>
+            </div>
+            <div class="p-6 bg-white/[0.02] rounded-2xl border border-white/10">
+                <i data-lucide="calendar" class="w-8 h-8 text-blue-400 mb-4"></i>
+                <h3 class="text-2xl font-semibold">0</h3>
+                <p class="text-white/50">Upcoming Pickups</p>
+            </div>
+            <div class="p-6 bg-white/[0.02] rounded-2xl border border-white/10">
+                <i data-lucide="award" class="w-8 h-8 text-yellow-400 mb-4"></i>
+                <h3 class="text-2xl font-semibold">Beginner</h3>
+                <p class="text-white/50">Impact Level</p>
+            </div>
+        </div>
+
+        <!-- === AVAILABLE FOOD SECTION === -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-semibold flex items-center gap-2">
+                    <i data-lucide="utensils" class="w-6 h-6 text-green-400"></i>
+                    Available Food
+                </h2>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="grid md:grid-cols-3 gap-4 mb-8 p-4 bg-white/[0.02] rounded-xl border border-white/10">
+                <div>
+                    <label class="text-xs text-white/50 mb-1 block">Search</label>
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-white/40"></i>
+                        <input type="text" id="searchInput" placeholder="Search food..."
+                            class="w-full bg-black/30 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-green-500/50">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs text-white/50 mb-1 block">Location (Distance)</label>
+                    <select id="filterLocation"
+                        class="w-full bg-black/30 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-green-500/50">
+                        <option value="all">All Locations</option>
+                        <option value="1">Within 1 km</option>
+                        <option value="3">Within 3 km</option>
+                        <option value="5">Within 5 km</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-white/50 mb-1 block">Price Range</label>
+                    <select id="filterPrice"
+                        class="w-full bg-black/30 border border-white/10 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-green-500/50">
+                        <option value="all">All Prices</option>
+                        <option value="0">Under ₹50 </option>
+                        <option value="5">Under ₹5</option>
+                        <option value="10">Under ₹10</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Food Grid -->
+            <div id="foodGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Food items injected by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- === ORDER MODAL === -->
+    <div id="orderModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-[#0A0B0E] border border-white/10 rounded-2xl max-w-md w-full p-6 relative">
+            <button onclick="closeModal('orderModal')" class="absolute top-4 right-4 text-white/60 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-xl font-semibold mb-4" id="modalItemName">Order Item</h3>
+
+            <div class="flex items-center gap-4 mb-6 bg-white/5 p-3 rounded-xl">
+                <img id="modalItemImage" src="" class="w-20 h-20 rounded-lg object-cover">
+                <div>
+                    <p class="text-white/60 text-sm" id="modalItemLocation">Location info</p>
+                    <p class="text-green-400 font-semibold text-lg" id="modalItemPrice">₹0.00</p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="text-sm text-white/60 mb-2 block">Quantity</label>
+                <div class="flex items-center gap-3">
+                    <button onclick="updateQuantity(-1)"
+                        class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10">
+                        <i data-lucide="minus" class="w-4 h-4"></i>
+                    </button>
+                    <span id="quantityDisplay" class="text-xl font-semibold w-10 text-center">1</span>
+                    <button onclick="updateQuantity(1)"
+                        class="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center hover:bg-white/10">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="text-sm text-white/60 mb-2 block">Payment Method</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectPayment('online')" id="payOnline"
+                        class="payment-btn p-3 border border-white/10 rounded-xl text-center hover:border-green-500/50 transition-all">
+                        <i data-lucide="credit-card" class="w-5 h-5 mx-auto mb-1 text-blue-400"></i>
+                        <span class="text-xs">Pay Online</span>
+                    </button>
+                    <button onclick="selectPayment('cod')" id="payCOD"
+                        class="payment-btn p-3 border border-white/10 rounded-xl text-center hover:border-green-500/50 transition-all">
+                        <i data-lucide="banknote" class="w-5 h-5 mx-auto mb-1 text-green-400"></i>
+                        <span class="text-xs">Cash on Pickup</span>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="placeOrder()"
+                class="w-full py-3 bg-green-500 text-white font-medium rounded-xl hover:bg-green-600 transition-colors">
+                Place Order
+            </button>
+        </div>
+    </div>
+
+    <!-- === SUCCESS / QR MODAL === -->
+    <div id="qrModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-[#0A0B0E] border border-white/10 rounded-2xl max-w-sm w-full p-6 text-center">
+            <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="check-circle" class="w-8 h-8 text-green-400"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-2">Order Confirmed!</h3>
+            <p class="text-white/60 text-sm mb-6">Show this QR code at the pickup location.</p>
+
+            <div class="bg-white p-4 rounded-xl inline-block mb-6">
+                <canvas id="qrCode"></canvas>
+            </div>
+
+            <p class="text-white/40 text-xs mb-6">Order ID: <span id="orderIdDisplay">#FS12345</span></p>
+
+            <button onclick="closeModal('qrModal')"
+                class="w-full py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
+                Done
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Mock Data
+        const foodData = [
+            { id: 1, name: "Roti Indian", price: 5.00, location: 1.2, image: "https://www.simplyrecipes.com/thmb/g0k8BoNJeW4wu-RvW7gks7-9udM=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Simply-Recipes-Roti-LEAD-3-38a1295fbb884aaabd42a34bcad9ea82.jpg", donor: "Indian Cafe" },
+            { id: 2, name: "Chicken Chawal", price: 40.00, location: 2.5, image: "https://www.spicypunch.com/wp-content/uploads/2023/02/Chicken-masala.jpg", donor: "Student Canteen" },
+            { id: 3, name: "Aloo Paratha", price: 10.00, location: 0.5, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNxGEDa0EGCFKGFTAsWhshfZGYKezVAytndw&s", donor: "Dhaba" },
+            { id: 4, name: "Paneer Roti", price: 50.00, location: 1.8, image: "https://i0.wp.com/smithakalluraya.com/wp-content/uploads/2015/06/kadai-paneer-recipe-1.jpg?resize=1080%2C1282&ssl=1", donor: "Curry House" }
+        ];
+
+        let currentItem = null;
+        let currentQuantity = 1;
+        let currentPaymentMethod = null;
+
+        // Render Logic
+        function renderFood() {
+            const grid = document.getElementById('foodGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const locFilter = document.getElementById('filterLocation').value;
+            const priceFilter = document.getElementById('filterPrice').value;
+
+            const filtered = foodData.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(search);
+                const matchLoc = locFilter === 'all' || item.location <= parseFloat(locFilter);
+                const matchPrice = priceFilter === 'all' ||
+                    (priceFilter === '0' && item.price === 0) ||
+                    (priceFilter !== '0' && item.price <= parseFloat(priceFilter));
+                return matchSearch && matchLoc && matchPrice;
+            });
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="food-card bg-white/[0.02] rounded-2xl border border-white/10 overflow-hidden">
+                    <div class="relative h-40">
+                        <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">
+                            <span class="absolute top-2 right-2 bg-black/60 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                                <i data-lucide="map-pin" class="w-3 h-3 text-blue-400"></i> ${item.location} km
+                            </span>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold">${item.name}</h4>
+                            <span class="font-bold ${item.price === 0 ? 'text-green-400' : 'text-white'}">${item.price === 0 ? 'FREE' : '₹' + item.price.toFixed(2)}</span>
+                        </div>
+                        <p class="text-white/50 text-xs mb-4">${item.donor}</p>
+                        <button onclick="openOrderModal(${item.id})" class="w-full py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-green-500/20 hover:border-green-500/50 hover:text-green-400 transition-all">
+                            Order Now
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Filter Listeners
+        document.getElementById('searchInput').addEventListener('input', renderFood);
+        document.getElementById('filterLocation').addEventListener('change', renderFood);
+        document.getElementById('filterPrice').addEventListener('change', renderFood);
+
+        // Order Modal Logic
+        function openOrderModal(id) {
+            currentItem = foodData.find(i => i.id === id);
+            currentQuantity = 1;
+            currentPaymentMethod = null;
+
+            document.getElementById('modalItemName').innerText = currentItem.name;
+            document.getElementById('modalItemImage').src = currentItem.image;
+            document.getElementById('modalItemLocation').innerText = `${currentItem.donor} • ${currentItem.location} km away`;
+            document.getElementById('modalItemPrice').innerText = currentItem.price === 0 ? 'FREE' : '₹' + currentItem.price.toFixed(2);
+            document.getElementById('quantityDisplay').innerText = 1;
+
+            // Reset UI
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('border-green-500', 'bg-green-500/10'));
+
+            document.getElementById('orderModal').classList.remove('hidden');
+            document.getElementById('orderModal').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function updateQuantity(change) {
+            currentQuantity = Math.max(1, currentQuantity + change);
+            document.getElementById('quantityDisplay').innerText = currentQuantity;
+        }
+
+        function selectPayment(type) {
+            currentPaymentMethod = type;
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('border-green-500', 'bg-green-500/10'));
+
+            if (type === 'online') document.getElementById('payOnline').classList.add('border-green-500', 'bg-green-500/10');
+            else document.getElementById('payCOD').classList.add('border-green-500', 'bg-green-500/10');
+        }
+
+        function placeOrder() {
+            if (!currentPaymentMethod) {
+                alert("Please select a payment method.");
+                return;
+            }
+
+            // Simulate Payment Processing if Online
+            if (currentPaymentMethod === 'online') {
+                console.log("Processing online payment...");
+            }
+
+            // Generate QR Code Data
+            const orderId = 'FS' + Math.floor(Math.random() * 90000 + 10000);
+            const qrData = JSON.stringify({
+                orderId: orderId,
+                item: currentItem.name,
+                qty: currentQuantity,
+                status: currentPaymentMethod === 'cod' ? 'PAY_ON_PICKUP' : 'PAID_ONLINE'
+            });
+
+            // Close Order Modal
+            closeModal('orderModal');
+
+            // Generate QR Code
+            setTimeout(() => {
+                document.getElementById('orderIdDisplay').innerText = '#' + orderId;
+                const qr = new QRious({
+                    element: document.getElementById('qrCode'),
+                    size: 200,
+                    value: qrData,
+                    background: '#ffffff',
+                    foreground: '#000000'
+                });
+
+                document.getElementById('qrModal').classList.remove('hidden');
+                document.getElementById('qrModal').classList.add('flex');
+                lucide.createIcons();
+            }, 500);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        // Initial Render
+        renderFood();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodBridge - Fighting Hunger Together</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+        }
+
+        /* Animations */
+        @keyframes fadeSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+                filter: blur(8px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        @keyframes modalIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeSlideIn 0.6s ease-out forwards;
+        }
+
+        .animate-fade-in-delay-1 {
+            animation: fadeSlideIn 0.6s ease-out 0.1s forwards;
+            opacity: 0;
+        }
+
+        .animate-fade-in-delay-2 {
+            animation: fadeSlideIn 0.6s ease-out 0.2s forwards;
+            opacity: 0;
+        }
+
+        .animate-fade-in-delay-3 {
+            animation: fadeSlideIn 0.6s ease-out 0.3s forwards;
+            opacity: 0;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-delay {
+            animation: float 6s ease-in-out 2s infinite;
+        }
+
+        .glow-effect {
+            animation: pulse-glow 8s ease-in-out infinite;
+        }
+
+        .modal-animate {
+            animation: modalIn 0.3s ease-out forwards;
+        }
+
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #60A5FA, #34D399, #A78BFA);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .shimmer-btn {
+            background: linear-gradient(90deg, #2563EB 0%, #3B82F6 50%, #2563EB 100%);
+            background-size: 200% auto;
+        }
+
+        .shimmer-btn:hover {
+            animation: shimmer 2s linear infinite;
+        }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(56, 189, 248, 0.15);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Modal Specific Styles */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.1);
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white overflow-x-hidden">
+    <!-- Background Glow Effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] glow-effect">
+        </div>
+        <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-green-500/5 rounded-full blur-[100px] glow-effect"
+            style="animation-delay: 4s;"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/3 rounded-full blur-[150px] glow-effect"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 modal-overlay">
+        <div
+            class="relative w-full max-w-md bg-white/[0.03] backdrop-blur-xl rounded-3xl border border-white/10 p-8 modal-animate">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-white/40 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-semibold">Welcome Back</h2>
+                <p class="text-white/50 text-sm mt-1">Sign in to continue</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMsg"
+                class="hidden mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <span id="errorText">Invalid credentials</span>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-white/70 mb-2">Username</label>
+                    <div class="relative">
+                        <i data-lucide="user"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30"></i>
+                        <input type="text" id="username" placeholder="Enter username"
+                            class="input-field w-full pl-12 pr-4 py-3 rounded-xl text-white" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-white/70 mb-2">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30"></i>
+                        <input type="password" id="password" placeholder="Enter password"
+                            class="input-field w-full pl-12 pr-4 py-3 rounded-xl text-white" required>
+                    </div>
+                </div>
+
+                <!-- BUTTONS SECTION -->
+                <div class="space-y-3 pt-2">
+                    <button type="button" onclick="handleLogin('student')" id="btnStudent"
+                        class="w-full py-3.5 rounded-xl font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+                        Login as Student
+                    </button>
+                    <button type="button" onclick="handleLogin('staff')" id="btnStaff"
+                        class="w-full py-3.5 rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="briefcase" class="w-5 h-5"></i>
+                        Login as Staff
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                    <i data-lucide="heart-handshake" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="text-xl font-semibold tracking-tight">FoodBridge</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#about" class="text-white/70 hover:text-white transition-colors duration-200">About</a>
+                <a href="#services" class="text-white/70 hover:text-white transition-colors duration-200">Services</a>
+                <a href="#impact" class="text-white/70 hover:text-white transition-colors duration-200">Impact</a>
+                <a href="#faq" class="text-white/70 hover:text-white transition-colors duration-200">FAQ</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openLoginModal()"
+                    class="hidden sm:block px-4 py-2 text-sm text-white/80 hover:text-white transition-colors">Login</button>
+                <button
+                    class="shimmer-btn px-5 py-2.5 text-sm font-medium text-white rounded-full transition-all hover:scale-105">
+                    Donate Now
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-20">
+        <div class="max-w-7xl mx-auto px-6 py-20 lg:py-32">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <div class="animate-fade-in">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-green-400"></i>
+                        <span class="text-sm text-white/70">Every meal matters</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.1] tracking-tight mb-6">
+                        Fighting Hunger,<br>
+                        <span class="gradient-text">Sharing Hope</span>
+                    </h1>
+                    <p class="text-lg sm:text-xl text-white/60 leading-relaxed mb-8 max-w-lg">
+                        Connect surplus food with those who need it most. Together, we can eliminate food waste and
+                        ensure no one goes hungry.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="openLoginModal()"
+                            class="shimmer-btn px-8 py-4 text-base font-medium text-white rounded-full transition-all hover:scale-105 shadow-[0_0_40px_8px_rgba(37,99,235,0.35)] flex items-center gap-2">
+                            <i data-lucide="utensils" class="w-5 h-5"></i>
+                            Get Started
+                        </button>
+                        <button
+                            class="px-8 py-4 text-base font-medium text-white/80 bg-white/5 border border-white/10 rounded-full transition-all hover:bg-white/10 hover:border-white/20 flex items-center gap-2">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                            Watch Video
+                        </button>
+                    </div>
+                </div>
+                <div class="relative animate-fade-in-delay-2">
+                    <div class="relative aspect-square max-w-md mx-auto">
+                        <!-- Floating cards -->
+                        <div
+                            class="absolute top-0 left-0 w-48 p-4 bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 animate-float card-hover">
+                            <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center mb-3">
+                                <i data-lucide="package" class="w-5 h-5 text-green-400"></i>
+                            </div>
+                            <p class="text-sm font-medium">Food Collected</p>
+                            <p class="text-2xl font-semibold text-green-400">2.5M+</p>
+                        </div>
+                        <div
+                            class="absolute bottom-10 right-0 w-52 p-4 bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 animate-float-delay card-hover">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                    <i data-lucide="users" class="w-5 h-5 text-blue-400"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-white/60">People Fed</p>
+                                    <p class="text-lg font-semibold">150,000+</p>
+                                </div>
+                            </div>
+                            <div class="h-2 bg-white/10 rounded-full overflow-hidden">
+                                <div class="h-full w-3/4 bg-gradient-to-r from-blue-500 to-green-400 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute top-1/3 right-10 w-44 p-4 bg-white/5 backdrop-blur-lg rounded-2xl border border-white/10 animate-float card-hover"
+                            style="animation-delay: 1s;">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-rose-400"></i>
+                                <span class="text-xs text-white/60">Active Centers</span>
+                            </div>
+                            <p class="text-xl font-semibold">500+</p>
+                            <p class="text-xs text-white/40">Across 50 cities</p>
+                        </div>
+                        <!-- Center image -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div
+                                class="w-64 h-64 rounded-full bg-gradient-to-br from-green-500/20 to-blue-500/20 blur-2xl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="relative py-16 border-y border-white/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center animate-fade-in">
+                    <p class="text-4xl lg:text-5xl font-semibold text-white mb-2">2.5M+</p>
+                    <p class="text-white/50">Meals Donated</p>
+                </div>
+                <div class="text-center animate-fade-in-delay-1">
+                    <p class="text-4xl lg:text-5xl font-semibold text-green-400 mb-2">500+</p>
+                    <p class="text-white/50">Partner NGOs</p>
+                </div>
+                <div class="text-center animate-fade-in-delay-2">
+                    <p class="text-4xl lg:text-5xl font-semibold text-blue-400 mb-2">50+</p>
+                    <p class="text-white/50">Cities Covered</p>
+                </div>
+                <div class="text-center animate-fade-in-delay-3">
+                    <p class="text-4xl lg:text-5xl font-semibold text-emerald-400 mb-2">98%</p>
+                    <p class="text-white/50">Food Delivered</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="relative py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="relative">
+                    <div
+                        class="aspect-[4/3] rounded-3xl overflow-hidden bg-gradient-to-br from-white/5 to-transparent border border-white/10">
+                        <img src="https://picsum.photos/seed/fooddonation1/800/600.jpg" alt="Food donation"
+                            class="w-full h-full object-cover opacity-80">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    </div>
+                    <div
+                        class="absolute -bottom-6 -right-6 p-6 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                                <i data-lucide="trending-up" class="w-6 h-6 text-green-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-white/60">This Month</p>
+                                <p class="text-xl font-semibold">+45% Growth</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
+                        <i data-lucide="info" class="w-4 h-4 text-green-400"></i>
+                        <span class="text-sm text-green-400">About Us</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-6">
+                        Bridging the Gap<br>
+                        <span class="text-white/60">Between Surplus & Need</span>
+                    </h2>
+                    <p class="text-lg text-white/60 leading-relaxed mb-6">
+                        Every year, millions of tons of food go to waste while millions of people go hungry. FoodBridge
+                        connects restaurants, grocery stores, and individuals with surplus food to local shelters and
+                        food banks.
+                    </p>
+                    <p class="text-lg text-white/60 leading-relaxed mb-8">
+                        Our platform makes it easy to donate food, coordinate pickups, and track your impact in
+                        real-time.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center gap-2 text-white/70">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                            <span>Easy Scheduling</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-white/70">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                            <span>Real-time Tracking</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-white/70">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                            <span>Tax Benefits</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="relative py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
+                    <i data-lucide="layers" class="w-4 h-4 text-blue-400"></i>
+                    <span class="text-sm text-blue-400">Our Services</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+                    How We Help
+                </h2>
+                <p class="text-lg text-white/60 max-w-2xl mx-auto">
+                    Comprehensive solutions for food donation and distribution
+                </p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 card-hover">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500/20 to-emerald-500/10 flex items-center justify-center mb-5 transition-transform group-hover:scale-110">
+                        <i data-lucide="package-plus" class="w-7 h-7 text-green-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Food Collection</h3>
+                    <p class="text-white/50 text-sm leading-relaxed">
+                        Schedule pickups for surplus food from your restaurant, event, or home. Our volunteers handle
+                        everything.
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 card-hover">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-sky-500/10 flex items-center justify-center mb-5 transition-transform group-hover:scale-110">
+                        <i data-lucide="truck" class="w-7 h-7 text-blue-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Distribution Network</h3>
+                    <p class="text-white/50 text-sm leading-relaxed">
+                        Our logistics network ensures food reaches shelters, food banks, and families in need quickly.
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 card-hover">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-violet-500/10 flex items-center justify-center mb-5 transition-transform group-hover:scale-110">
+                        <i data-lucide="bar-chart-3" class="w-7 h-7 text-purple-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Impact Tracking</h3>
+                    <p class="text-white/50 text-sm leading-relaxed">
+                        See exactly how your donations help. Track meals provided, carbon saved, and lives improved.
+                    </p>
+                </div>
+                <!-- Card 4 -->
+                <div class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 card-hover">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/10 flex items-center justify-center mb-5 transition-transform group-hover:scale-110">
+                        <i data-lucide="building-2" class="w-7 h-7 text-orange-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Corporate Partners</h3>
+                    <p class="text-white/50 text-sm leading-relaxed">
+                        Partner with us for regular food donations. We provide tax receipts and CSR reporting.
+                    </p>
+                </div>
+                <!-- Card 5 -->
+                <div class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 card-hover">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-500/20 to-pink-500/10 flex items-center justify-center mb-5 transition-transform group-hover:scale-110">
+                        <i data-lucide="calendar-heart" class="w-7 h-7 text-rose-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Event Donation</h3>
+                    <p class="text-white/50 text-sm leading-relaxed">
+                        Hosting an event? Don't let leftover food go to waste. We'll collect it and distribute to those
+                        in need.
+                    </p>
+                </div>
+                <!-- Card 6 -->
+                <div class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 card-hover">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500/20 to-cyan-500/10 flex items-center justify-center mb-5 transition-transform group-hover:scale-110">
+                        <i data-lucide="shield-check" class="w-7 h-7 text-teal-400"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-3">Food Safety</h3>
+                    <p class="text-white/50 text-sm leading-relaxed">
+                        All donations follow strict food safety guidelines. We ensure quality and freshness for
+                        recipients.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="relative py-20 lg:py-32 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+                    <i data-lucide="route" class="w-4 h-4 text-emerald-400"></i>
+                    <span class="text-sm text-emerald-400">Process</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+                    How It Works
+                </h2>
+                <p class="text-lg text-white/60 max-w-2xl mx-auto">
+                    Three simple steps to make a difference
+                </p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="relative text-center">
+                    <div
+                        class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(52,211,153,0.3)]">
+                        <span class="text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Schedule Donation</h3>
+                    <p class="text-white/50 leading-relaxed">
+                        Use our app or website to schedule a food pickup at your convenience.
+                    </p>
+                    <div
+                        class="hidden md:block absolute top-10 left-[60%] w-[80%] h-[2px] bg-gradient-to-r from-green-500/50 to-transparent">
+                    </div>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative text-center">
+                    <div
+                        class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-600 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(96,165,250,0.3)]">
+                        <span class="text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">We Pick Up</h3>
+                    <p class="text-white/50 leading-relaxed">
+                        Our verified volunteers arrive at your location to collect the food safely.
+                    </p>
+                    <div
+                        class="hidden md:block absolute top-10 left-[60%] w-[80%] h-[2px] bg-gradient-to-r from-blue-500/50 to-transparent">
+                    </div>
+                </div>
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div
+                        class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(167,139,250,0.3)]">
+                        <span class="text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Food Delivered</h3>
+                    <p class="text-white/50 leading-relaxed">
+                        Food reaches those in need, and you receive an impact report.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="impact" class="relative py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-500/10 border border-sky-500/20 mb-6">
+                        <i data-lucide="target" class="w-4 h-4 text-sky-400"></i>
+                        <span class="text-sm text-sky-400">Our Impact</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-6">
+                        Real Change,<br>
+                        <span class="text-white/60">Measurable Impact</span>
+                    </h2>
+                    <p class="text-lg text-white/60 leading-relaxed mb-8">
+                        Every donation creates ripples of change. Here's what our community has achieved together.
+                    </p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="p-5 bg-white/[0.02] rounded-xl border border-white/10">
+                            <i data-lucide="utensils-crossed" class="w-8 h-8 text-green-400 mb-3"></i>
+                            <p class="text-3xl font-semibold mb-1">2.5M</p>
+                            <p class="text-sm text-white/50">Meals Served</p>
+                        </div>
+                        <div class="p-5 bg-white/[0.02] rounded-xl border border-white/10">
+                            <i data-lucide="leaf" class="w-8 h-8 text-emerald-400 mb-3"></i>
+                            <p class="text-3xl font-semibold mb-1">850T</p>
+                            <p class="text-sm text-white/50">CO₂ Saved</p>
+                        </div>
+                        <div class="p-5 bg-white/[0.02] rounded-xl border border-white/10">
+                            <i data-lucide="heart" class="w-8 h-8 text-rose-400 mb-3"></i>
+                            <p class="text-3xl font-semibold mb-1">150K</p>
+                            <p class="text-sm text-white/50">People Helped</p>
+                        </div>
+                        <div class="p-5 bg-white/[0.02] rounded-xl border border-white/10">
+                            <i data-lucide="recycle" class="w-8 h-8 text-blue-400 mb-3"></i>
+                            <p class="text-3xl font-semibold mb-1">5K Tons</p>
+                            <p class="text-sm text-white/50">Food Saved</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div
+                        class="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-white/5 to-transparent border border-white/10">
+                        <img src="https://picsum.photos/seed/volunteers/800/800.jpg" alt="Volunteers"
+                            class="w-full h-full object-cover opacity-70">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
+                        </div>
+                    </div>
+                    <div
+                        class="absolute -bottom-6 -left-6 p-5 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 max-w-xs">
+                        <div class="flex items-center gap-4 mb-3">
+                            <div class="flex -space-x-3">
+                                <img src="https://picsum.photos/seed/person1/48/48.jpg"
+                                    class="w-10 h-10 rounded-full border-2 border-black">
+                                <img src="https://picsum.photos/seed/person2/48/48.jpg"
+                                    class="w-10 h-10 rounded-full border-2 border-black">
+                                <img src="https://picsum.photos/seed/person3/48/48.jpg"
+                                    class="w-10 h-10 rounded-full border-2 border-black">
+                            </div>
+                            <div>
+                                <p class="font-medium">12K+ Volunteers</p>
+                                <p class="text-xs text-white/50">Join our community</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="relative py-20 lg:py-32 bg-gradient-to-b from-transparent via-white/[0.02] to-transparent">
+        <div class="max-w-3xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-6">
+                    <i data-lucide="help-circle" class="w-4 h-4 text-violet-400"></i>
+                    <span class="text-sm text-violet-400">FAQ</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight mb-4">
+                    Common Questions
+                </h2>
+            </div>
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div
+                    class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 transition-all hover:border-white/20">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="clock" class="w-5 h-5 text-green-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold mb-2">What types of food can I donate?</h3>
+                            <p class="text-sm text-white/50 leading-relaxed">
+                                We accept most non-perishable items, fresh produce, baked goods, and prepared meals from
+                                commercial kitchens. All food must be within its expiration date and properly stored.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 2 -->
+                <div
+                    class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 transition-all hover:border-white/20">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="calendar" class="w-5 h-5 text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold mb-2">How quickly can you pick up donations?</h3>
+                            <p class="text-sm text-white/50 leading-relaxed">
+                                For perishable items, we can often arrange same-day pickup. For non-perishables,
+                                scheduling is flexible. Emergency pickups are available for large quantities.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 3 -->
+                <div
+                    class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 transition-all hover:border-white/20">
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="receipt" class="w-5 h-5 text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold mb-2">Do you provide tax receipts?</h3>
+                            <p class="text-sm text-white/50 leading-relaxed">
+                                Yes! All donations receive a detailed receipt for tax purposes. Corporate partners
+                                receive additional documentation for CSR reporting and compliance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- FAQ Item 4 -->
+                <div
+                    class="group p-6 bg-white/[0.02] rounded-2xl border border-white/10 transition-all hover:border-white/20">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="shield" class="w-5 h-5 text-rose-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold mb-2">How do you ensure food safety?</h3>
+                            <p class="text-sm text-white/50 leading-relaxed">
+                                Our volunteers are trained in food safety protocols. We maintain cold chain for
+                                perishables, use sanitized containers, and follow all local health department
+                                guidelines.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-20 lg:py-32">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div
+                class="p-12 lg:p-16 rounded-3xl bg-gradient-to-br from-blue-600/20 to-purple-600/10 border border-white/10 relative overflow-hidden">
+                <!-- Background decoration -->
+                <div
+                    class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-gradient-to-b from-sky-500/20 to-transparent blur-[80px]">
+                </div>
+
+                <div class="relative">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-white/10 flex items-center justify-center mb-6">
+                        <i data-lucide="heart" class="w-8 h-8 text-rose-400"></i>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-semibold tracking-tight mb-4">
+                        Ready to Make a Difference?
+                    </h2>
+                    <p class="text-lg text-white/60 mb-8 max-w-xl mx-auto">
+                        Join thousands of donors who are already fighting hunger in their communities. Every meal
+                        counts.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button onclick="openLoginModal()"
+                            class="shimmer-btn px-8 py-4 text-base font-medium text-white rounded-full transition-all hover:scale-105 shadow-[0_0_40px_8px_rgba(37,99,235,0.35)] flex items-center gap-2">
+                            <i data-lucide="hand-heart" class="w-5 h-5"></i>
+                            Get Started
+                        </button>
+                        <button
+                            class="px-8 py-4 text-base font-medium text-white bg-white/10 border border-white/20 rounded-full transition-all hover:bg-white/20 flex items-center gap-2">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            Become a Volunteer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+                            <i data-lucide="heart-handshake" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-xl font-semibold">FoodBridge</span>
+                    </div>
+                    <p class="text-sm text-white/50 leading-relaxed">
+                        Connecting surplus food with those who need it most. Together, we can end hunger.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm text-white/50">
+                        <li><a href="#about" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">How It Works</a></li>
+                        <li><a href="#impact" class="hover:text-white transition-colors">Our Impact</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Partners</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Get Involved</h4>
+                    <ul class="space-y-2 text-sm text-white/50">
+                        <li><a href="#" class="hover:text-white transition-colors">Donate Food</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Volunteer</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Corporate Partners</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">NGO Registration</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact</h4>
+                    <ul class="space-y-2 text-sm text-white/50">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            hello@FoodBridge.org
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                            +1 (555) 123-4567
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                            123 Hope Street, NYC
+                        </li>
+                    </ul>
+                    <div class="flex gap-3 mt-4">
+                        <a href="#"
+                            class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i data-lucide="twitter" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#"
+                            class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#"
+                            class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i data-lucide="linkedin" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-white/40">© 2024 FoodBridge. All rights reserved.</p>
+                <div class="flex gap-6 text-sm text-white/40">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Modal Logic
+        const loginModal = document.getElementById('loginModal');
+        const errorMsg = document.getElementById('errorMsg');
+        const errorText = document.getElementById('errorText');
+
+        function openLoginModal() {
+            loginModal.classList.remove('hidden');
+            loginModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeLoginModal() {
+            loginModal.classList.add('hidden');
+            loginModal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+            errorMsg.classList.add('hidden');
+        }
+
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) closeLoginModal();
+        });
+
+        async function handleLogin(role) {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showError("Please fill in all fields");
+                return;
+            }
+
+            // Update button loading state
+            const btn = document.getElementById(role === 'student' ? 'btnStudent' : 'btnStaff');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            btn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, role })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect based on role returned from server
+                    if (data.user.role === 'student') {
+                        window.location.href = 'studentpage.html';
+                    } else if (data.user.role === 'staff') {
+                        window.location.href = 'staff.html';
+                    }
+                } else {
+                    showError(data.message);
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    lucide.createIcons();
+                }
+            } catch (error) {
+                showError("Cannot connect to server");
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+        }
+
+        // Smooth scroll for anchor links (From Old Index)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for scroll animations (From Old Index)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section > div').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>

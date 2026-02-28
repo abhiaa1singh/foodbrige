@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -70,4 +71,5 @@ app.post('/login', (req, res) => {
 
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
+
 });
